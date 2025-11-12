@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIMLSE - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-student {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-teacher {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .badge-admin {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .btn-logout {
+            padding: 10px 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #d32f2f;
+        }
+
+        .dashboard-content {
+            display: grid;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .lessons-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .lesson-item {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .lesson-item:hover {
+            transform: translateX(5px);
+        }
+
+        .lesson-item h4 {
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .lesson-item .info {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .lesson-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* Admin Panel Styles */
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        .btn-secondary {
+            background: #9e9e9e;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #757575;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .users-table table {
+            width: 100%;
+            min-width: 800px;
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .users-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .users-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .admin-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1 id="userName">Welcome!</h1>
+                <span id="userBadge" class="badge"></span>
+            </div>
+            <div class="user-info">
+                <button class="btn-logout" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <!-- Quick Actions Card -->
+            <div class="card">
+                <h2>Quick Actions</h2>
+                <div id="featuresGrid" class="features-grid"></div>
+            </div>
+
+            <!-- Lessons Card -->
+            <div class="card">
+                <h2 id="lessonsTitle">Your Lessons</h2>
+                <div id="lessonsList" class="lessons-list"></div>
+            </div>
+
+            <!-- Admin Panel (Only visible to admins) -->
+            <div id="adminPanel" class="card admin-panel">
+                <h2>User Management</h2>
+                
+                <div id="adminAlert" class="alert"></div>
+
+                <div class="admin-controls">
+                    <button class="btn btn-primary" onclick="openAddUserModal()">➕ Add User</button>
+                    <button class="btn btn-secondary" onclick="loadUsers()">🔄 Refresh</button>
+                </div>
+
+                <div class="users-table" id="usersTableContainer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                                <th>Status</th>
+                                <th>Login Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 30px; color: #999;">
+                                    Loading users...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add User</h3>
+                <button class="close-btn" onclick="closeUserModal()">×</button>
+            </div>
+
+            <form id="userForm">
+                <input type="hidden" id="editingUsername">
+
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="userName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Username *</label>
+                    <input type="text" id="userUsername" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="userStatus" required>
+                        <option value="Student">Student</option>
+                        <option value="Teacher">Teacher</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="isOAuth">
+                    <label for="isOAuth" style="margin: 0;">Google Sign-In Only (no password)</label>
+                </div>
+
+                <div class="form-group" id="passwordGroup">
+                    <label id="passwordLabel">Password *</label>
+                    <input type="password" id="userPassword">
+                    <small id="passwordHint">Leave blank to keep existing password (when editing)</small>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">Save User</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeUserModal()" style="flex: 1;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let currentUser = null;
+        let isEditMode = false;
+
+        // Load dashboard on page load
+        window.addEventListener('load', async () => {
+            try {
+                // Check authentication
+                const userResponse = await fetch(`${API_BASE}/api/user`, {
+                    credentials: 'include'
+                });
+
+                if (!userResponse.ok) {
+                    window.location.href = '/';
+                    return;
+                }
+
+                currentUser = await userResponse.json();
+
+                // Load dashboard content
+                const dashResponse = await fetch(`${API_BASE}/api/dashboard`, {
+                    credentials: 'include'
+                });
+
+                if (!dashResponse.ok) {
+                    throw new Error('Failed to load dashboard');
+                }
+
+                const data = await dashResponse.json();
+
+                // Update UI
+                document.getElementById('userName').textContent = `Welcome, ${data.user.name}!`;
+                
+                const badge = document.getElementById('userBadge');
+                badge.textContent = data.user.status;
+                badge.className = `badge badge-${data.user.status.toLowerCase()}`;
+
+                // Populate features
+                const featuresGrid = document.getElementById('featuresGrid');
+                featuresGrid.innerHTML = data.content.features.map(feature => `
+                    <div class="feature-card">${feature}</div>
+                `).join('');
+
+                // Populate lessons
+                const lessonsList = document.getElementById('lessonsList');
+                if (data.user.status === 'Student') {
+                    document.getElementById('lessonsTitle').textContent = 'Your Lessons';
+                } else if (data.user.status === 'Teacher') {
+                    document.getElementById('lessonsTitle').textContent = 'Your Classes';
+                } else {
+                    document.getElementById('lessonsTitle').textContent = 'System Overview';
+                }
+
+                lessonsList.innerHTML = data.content.lessons.map(lesson => `
+                    <div class="lesson-item">
+                        <div>
+                            <h4>${lesson.title}</h4>
+                            ${lesson.students !== undefined ? 
+                                `<p class="info">${lesson.students} ${data.user.status === 'Admin' ? 'items' : 'students'}</p>` : ''}
+                        </div>
+                        ${lesson.completed !== undefined ? 
+                            `<span class="lesson-status status-${lesson.completed ? 'completed' : 'pending'}">
+                                ${lesson.completed ? 'Completed' : 'In Progress'}
+                            </span>` : ''}
+                    </div>
+                `).join('');
+
+                // Show admin panel if user is admin
+                if (data.user.status === 'Admin') {
+                    document.getElementById('adminPanel').classList.add('active');
+                    loadUsers();
+                }
+
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                alert('Failed to load dashboard. Please try logging in again.');
+                window.location.href = '/';
+            }
+        });
+
+        // Logout
+        async function handleLogout() {
+            try {
+                await fetch(`${API_BASE}/api/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/';
+            }
+        }
+
+        // === ADMIN FUNCTIONS ===
+
+        function showAdminAlert(message, type) {
+            const alert = document.getElementById('adminAlert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type} show`;
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/users`, {
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load users');
+                }
+
+                const data = await response.json();
+                const tbody = document.getElementById('usersTableBody');
+
+                if (data.users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px; color: #999;">No users found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.users.map(user => `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.username}</td>
+                        <td><span class="badge badge-${user.status.toLowerCase()}">${user.status}</span></td>
+                        <td>${user.isOAuth ? '🔐 Google' : '🔑 Password'}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-primary btn-small" onclick='editUser(${JSON.stringify(user)})'>Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteUser('${user.username}', '${user.name}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showAdminAlert('Failed to load users', 'error');
+            }
+        }
+
+        function openAddUserModal() {
+            isEditMode = false;
+            document.getElementById('modalTitle').textContent = 'Add User';
+            document.getElementById('userForm').reset();
+            document.getElementById('editingUsername').value = '';
+            document.getElementById('passwordLabel').textContent = 'Password *';
+            document.getElementById('passwordHint').style.display = 'none';
+            document.getElementById('userPassword').required = true;
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function editUser(user) {
+            isEditMode = true;
+            document.getElementById('modalTitle').textContent = 'Edit User';
+            document.getElementById('editingUsername').value = user.username;
+            document.getElementById('userName').value = user.name;
+            document.getElementById('userEmail').value = user.email;
+            document.getElementById('userUsername').value = user.username;
+            document.getElementById('userStatus').value = user.status;
+            document.getElementById('isOAuth').checked = user.isOAuth;
+            document.getElementById('userPassword').value = '';
+            document.getElementById('passwordLabel').textContent = 'Password (optional)';
+            document.getElementById('passwordHint').style.display = 'block';
+            document.getElementById('userPassword').required = false;
+            document.getElementById('userModal').classList.add('active');
+            togglePasswordField();
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('active');
+        }
+
+        // Toggle password field based on OAuth checkbox
+        document.getElementById('isOAuth').addEventListener('change', togglePasswordField);
+
+        function togglePasswordField() {
+            const isOAuth = document.getElementById('isOAuth').checked;
+            const passwordGroup = document.getElementById('passwordGroup');
+            const passwordInput = document.getElementById('userPassword');
+            
+            if (isOAuth) {
+                passwordGroup.style.display = 'none';
+                passwordInput.required = false;
+            } else {
+                passwordGroup.style.display = 'block';
+                if (!isEditMode) {
+                    passwordInput.required = true;
+                }
+            }
+        }
+
+        // Handle user form submission
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                username: document.getElementById('userUsername').value,
+                status: document.getElementById('userStatus').value,
+                isOAuth: document.getElementById('isOAuth').checked,
+                password: document.getElementById('userPassword').value
+            };
+
+            try {
+                let response;
+                if (isEditMode) {
+                    const oldUsername = document.getElementById('editingUsername').value;
+                    response = await fetch(`${API_BASE}/api/admin/users/${oldUsername}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData),
+                        credentials: 'include'
+                    });
+                } else {
+                    response = await fetch(`${API_BASE}/api/admin/users`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData),
+                        credentials: 'include'
+                    });
+                }
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAdminAlert(data.message, 'success');
+                    closeUserModal();
+                    loadUsers();
+                } else {
+                    showAdminAlert(data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving user:', error);
+                showAdminAlert('Failed to save user', 'error');
+            }
+        });
+
+        async function deleteUser(username, name) {
+            if (username === currentUser.username) {
+                showAdminAlert('Cannot delete your own account', 'error');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete user "${name}"? This cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/users/${username}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAdminAlert(data.message, 'success');
+                    loadUsers();
+                } else {
+                    showAdminAlert(data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                showAdminAlert('Failed to delete user', 'error');
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('userModal').addEventListener('click', (e) => {
+            if (e.target.id === 'userModal') {
+                closeUserModal();
+            }
+        });
+    </script>
+</body>
+</html>
